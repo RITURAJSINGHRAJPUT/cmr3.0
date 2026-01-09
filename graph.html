@@ -1,0 +1,77 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Analytics | Cold Chain Pro</title>
+
+    <!-- Fonts: Inter -->
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+
+    <!-- Icons: Remix Icon -->
+    <link href="https://cdn.jsdelivr.net/npm/remixicon@3.5.0/fonts/remixicon.css" rel="stylesheet">
+
+    <!-- Chart.js -->
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+
+    <link rel="stylesheet" href="css/style.css">
+    <link rel="stylesheet" href="css/dashboard.css">
+</head>
+
+<body>
+
+    <!-- Top Navigation -->
+    <header class="main-header">
+        <div class="brand">
+            <div class="logo-mark"></div>
+            <span>Cold Chain Pro</span>
+        </div>
+        <nav class="top-nav">
+            <a href="index.html" class="nav-link">Dashboard</a>
+            <a href="graph.html" class="nav-link active">Analytics</a>
+        </nav>
+        <div class="header-controls">
+            <button class="icon-btn"><i class="ri-notification-3-line"></i></button>
+            <button class="icon-btn"><i class="ri-settings-4-line"></i></button>
+            <img src="https://ui-avatars.com/api/?name=User&background=FFE4C4&color=5c4033" alt="Profile"
+                class="user-avatar">
+        </div>
+    </header>
+
+    <main class="dashboard-container">
+        <h1 class="page-title">Live Temperature Analytics</h1>
+
+        <!-- Graph Section -->
+        <div class="card chart-section" style="height: 600px; display: flex; flex-direction: column;">
+            <div class="history-header">
+                <h2>Real-time Temperature Stream</h2>
+                <div style="display: flex; gap: 1rem; align-items: center;">
+                    <span class="badge-normal" id="statusBadge" style="display: none;">NORMAL</span>
+                    <button class="btn-text" onclick="window.location.reload()"><i class="ri-refresh-line"></i>
+                        Refresh</button>
+                </div>
+            </div>
+
+            <div class="chart-container" style="flex: 1; min-height: 0; margin-top: 1rem;">
+                <canvas id="tempChart"></canvas>
+            </div>
+        </div>
+
+        <footer class="app-footer">
+            <span>© 2024 Cold Chain Pro. Analytics v1.0</span>
+            <div class="footer-links">
+                <a href="#">System Health</a>
+                <a href="#">Support</a>
+                <a href="#">Privacy</a>
+            </div>
+        </footer>
+
+    </main>
+
+    <script type="module" src="js/graph-monitor.js"></script>
+</body>
+
+</html>

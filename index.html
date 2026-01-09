@@ -1,0 +1,262 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Dashboard | Cold Chain Pro</title>
+
+    <!-- Fonts: Inter -->
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+
+    <!-- Icons: Remix Icon -->
+    <link href="https://cdn.jsdelivr.net/npm/remixicon@3.5.0/fonts/remixicon.css" rel="stylesheet">
+
+    <link rel="stylesheet" href="css/style.css">
+    <link rel="stylesheet" href="css/dashboard.css">
+</head>
+
+<body>
+
+    <!-- Critical Alert Bar -->
+    <div class="alert-bar" style="display: none;"> <!-- Hidden as requested -->
+        <div class="alert-content">
+            <div class="alert-icon">
+                <i class="ri-alert-fill"></i>
+            </div>
+            <div class="alert-text">
+                <span class="alert-title">Temperature Out of Safe Range</span>
+                <span class="alert-desc">Urgent action required for Remote Hub A. Detected a breach of the 2-8°C
+                    threshold.</span>
+            </div>
+        </div>
+        <div class="alert-actions">
+            <button class="btn-alert-white">Acknowledge</button>
+            <button class="btn-alert-outline">View Protocol</button>
+        </div>
+    </div>
+
+    <!-- Top Navigation -->
+    <header class="main-header">
+        <div class="brand">
+            <div class="logo-mark"></div>
+            <span>Cold Chain Pro</span>
+        </div>
+        <nav class="top-nav">
+            <a href="index.html" class="nav-link active">Dashboard</a>
+            <a href="graph.html" class="nav-link">Analytics</a>
+            <!-- <a href="#" class="nav-link">Sensors</a> -->
+            <!-- <a href="inventory.html" class="nav-link">Inventory</a> -->
+            <!-- <a href="#" class="nav-link">Reports</a> -->
+        </nav>
+        <div class="header-controls">
+            <button class="icon-btn"><i class="ri-notification-3-line"></i></button>
+            <button class="icon-btn"><i class="ri-settings-4-line"></i></button>
+            <img src="https://ui-avatars.com/api/?name=User&background=FFE4C4&color=5c4033" alt="Profile"
+                class="user-avatar">
+        </div>
+    </header>
+
+    <main class="dashboard-container">
+        <h1 class="page-title">System Overview: Remote Hub A</h1>
+
+        <!-- Top Section: Monitor Cards -->
+        <div class="monitor-grid">
+
+            <!-- Main Temperature Card -->
+            <div class="card main-temp-card">
+                <div class="card-header">
+                    <span class="card-label">LIVE TEMPERATURE</span>
+                    <span class="badge-critical">CRITICAL ALERT</span>
+                </div>
+
+                <div class="temp-display-large">
+                    <span class="temp-val">9.1°C</span>
+                    <i class="ri-pulse-line trend-icon down"></i>
+                </div>
+
+                <!-- Range Slider Visualization -->
+                <div class="range-viz">
+                    <div class="range-labels"
+                        style="display: flex; justify-content: space-between; align-items: center;">
+                        <span>Target range settings:</span>
+                        <div class="range-inputs" style="display: flex; gap: 0.5rem; align-items: center;">
+                            <label style="font-size: 0.8rem; color: #64748B;">Min: <input type="number"
+                                    id="minTempInput" step="0.1" placeholder="Min"
+                                    style="border: 1px solid #CBD5E1; border-radius: 4px; width: 60px; padding: 2px;"></label>
+                            <label style="font-size: 0.8rem; color: #64748B;">Max: <input type="number"
+                                    id="maxTempInput" step="0.1" placeholder="Max"
+                                    style="border: 1px solid #CBD5E1; border-radius: 4px; width: 60px; padding: 2px;"></label>
+                        </div>
+                    </div>
+                    <div class="range-track">
+                        <div class="safe-zone"></div>
+                        <div class="current-marker" style="left: 85%;"></div>
+                    </div>
+                    <div class="range-axis">
+                        <span>0°C</span>
+                        <span style="text-align: center;">SAFE ZONE (2-8°C)</span>
+                        <span style="text-align: right;">40°C</span>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Side Info Cards -->
+            <div class="side-cards">
+                <div class="card info-card">
+                    <div class="icon-box grey">
+                        <i class="ri-flask-line"></i>
+                    </div>
+                    <div class="info-content">
+                        <span class="label">ASSET</span>
+                        <span class="value">Milk Storage (A-12)</span>
+                    </div>
+                </div>
+
+                <div class="card info-card">
+                    <div class="icon-box grey">
+                        <i class="ri-sensor-line"></i>
+                    </div>
+                    <div class="info-content">
+                        <span class="label">SENSOR STATUS</span>
+                        <span class="value dot-val"><span class="dot green"></span> Active / 88% Batt</span>
+                    </div>
+                </div>
+
+                <div class="card info-card">
+                    <div class="icon-box grey">
+                        <i class="ri-map-pin-line"></i>
+                    </div>
+                    <div class="info-content">
+                        <span class="label">LOCATION</span>
+                        <span class="value">Remote Hub A (Cluster 4)</span>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Middle Section: History & Charts -->
+        <div class="card history-section">
+            <div class="history-header">
+                <h2>Temperature History (Last 12 Hours)</h2>
+                <button class="btn-text"><i class="ri-download-line"></i> Export Logs</button>
+            </div>
+
+            <!-- Simple Table -->
+            <div class="table-wrapper">
+                <table class="history-table">
+                    <thead>
+                        <tr>
+                            <th>TIMESTAMP</th>
+                            <th>METRIC</th>
+                            <th>READING</th>
+                            <th>STATUS</th>
+                            <th>ACTION TAKEN</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        <tr class="highlight-red">
+                            <td><span class="bold-red">14:23:45 (Now)</span></td>
+                            <td>Internal Temp</td>
+                            <td><span class="bold-red temp-log-val">9.1°C</span></td>
+                            <td><span class="badge-breach">BREACH</span></td>
+                            <td><span class="italic-grey">System alert triggered</span></td>
+                        </tr>
+                        <tr>
+                            <td>14:18:02</td>
+                            <td>Internal Temp</td>
+                            <td><span class="bold-orange">7.9°C</span></td>
+                            <td><span class="badge-warning">WARNING</span></td>
+                            <td>-</td>
+                        </tr>
+                        <tr>
+                            <td>14:13:00</td>
+                            <td>Internal Temp</td>
+                            <td><strong>7.2°C</strong></td>
+                            <td><span class="badge-normal">NORMAL</span></td>
+                            <td>-</td>
+                        </tr>
+                        <tr>
+                            <td>14:08:00</td>
+                            <td>Internal Temp</td>
+                            <td><strong>6.8°C</strong></td>
+                            <td><span class="badge-normal">NORMAL</span></td>
+                            <td>-</td>
+                        </tr>
+                        <tr>
+                            <td>14:03:00</td>
+                            <td>Internal Temp</td>
+                            <td><strong>6.4°C</strong></td>
+                            <td><span class="badge-normal">NORMAL</span></td>
+                            <td>-</td>
+                        </tr>
+                    </tbody>
+                </table>
+            </div>
+        </div>
+
+        <!-- Bottom Section: Visualization -->
+        <div class="card chart-section">
+            <div class="history-header">
+                <h2>Temperature Spike Visualization</h2>
+            </div>
+
+            <div class="chart-container">
+                <!-- CSS Bar Chart (Mock) -->
+                <div class="bar-chart">
+                    <div class="bar normal" style="height: 40px; width: 15%;"></div>
+                    <div class="bar normal" style="height: 45px; width: 15%;"></div>
+                    <div class="bar normal" style="height: 50px; width: 15%;"></div>
+                    <div class="bar normal" style="height: 55px; width: 15%;"></div>
+                    <div class="bar normal" style="height: 60px; width: 15%;"></div>
+                    <div class="bar warning" style="height: 80px; width: 15%;"></div>
+                    <div class="bar danger" style="height: 110px; width: 15%;"></div> <!-- Spike -->
+                    <div class="bar danger" style="height: 105px; width: 15%;"></div>
+
+                    <!-- Threshold Line -->
+                    <div class="threshold-line">
+                        <span>THRESHOLD 8°C</span>
+                    </div>
+                </div>
+                <div class="chart-labels">
+                    <span>13:30</span>
+                    <span>13:45</span>
+                    <span>14:00</span>
+                    <span>14:15</span>
+                    <span>14:30 (CURRENT)</span>
+                </div>
+            </div>
+        </div>
+
+        <footer class="app-footer">
+            <span>© 2024 Cold Chain Pro. Monitoring Hub v2.1.0-alert-state</span>
+            <div class="footer-links">
+                <a href="#">System Health</a>
+                <a href="#">Support</a>
+                <a href="#">Privacy</a>
+            </div>
+        </footer>
+
+    </main>
+
+    <!-- Sensor Fault Popup -->
+    <div id="sensorFaultPopup" class="modal-overlay" style="display: none;">
+        <div class="modal-content warning-modal">
+            <div class="modal-icon bubble-pulse">
+                <i class="ri-error-warning-fill"></i>
+            </div>
+            <h2>Sensor Fault Detected</h2>
+            <p>Data transmission interrupted. Last signal received > 2s ago.</p>
+            <p class="sub-text">Check sensor connection or power supply.</p>
+            <button class="btn-dismiss"
+                onclick="document.getElementById('sensorFaultPopup').style.display='none'">Dismiss Alarm</button>
+        </div>
+    </div>
+
+    <script src="js/main.js"></script>
+    <script type="module" src="js/firebase-monitor.js"></script>
+</body>
+
+</html>

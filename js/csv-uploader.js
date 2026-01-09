@@ -128,6 +128,9 @@ async function parseAndUpload(csvText) {
             const timeStr = parts[0].trim();
             const tempStr = parts[1].trim();
 
+            // Skip if temperature is missing
+            if (tempStr === "") continue;
+
             const timestamp = parseDate(timeStr);
             const temp = Number(tempStr);
 

@@ -59,6 +59,42 @@ const tempChart = new Chart(ctx, {
 
 // Listener
 document.getElementById('filterBtn').onclick = applyFilterAction;
+const clearBtn = document.getElementById('clearBtn');
+if (clearBtn) clearBtn.onclick = clearHistoryData;
+
+import { deleteDoc, doc } from "https://www.gstatic.com/firebasejs/12.7.0/firebase-firestore.js";
+
+async function clearHistoryData() {
+    if (!confirm("Are you sure you want to DELETE ALL history data? This cannot be undone.")) return;
+
+    const btn = document.getElementById('clearBtn');
+    const originalText = btn.innerHTML;
+    btn.innerHTML = 'Deleting...';
+    btn.disabled = true;
+
+    try {
+        const historyCol = collection(db, 'device_history');
+        const q = query(historyCol);
+        const snapshot = await getDocs(q);
+
+        // Batched delete would be better for many docs, but simple loop for now
+        const deletePromises = snapshot.docs.map(d => deleteDoc(doc(db, 'device_history', d.id)));
+        await Promise.all(deletePromises);
+
+        alert("History Cleared Successfully.");
+        // Clear chart
+        tempChart.data.labels = [];
+        tempChart.data.datasets[0].data = [];
+        tempChart.update();
+
+    } catch (e) {
+        console.error("Error clearing history:", e);
+        alert("Failed to clear history: " + e.message);
+    } finally {
+        btn.innerHTML = originalText;
+        btn.disabled = false;
+    }
+}
 
 // Initialize Flatpickr 24h
 flatpickr("#startTime", {

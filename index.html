@@ -28,7 +28,7 @@
             </div>
             <div class="alert-text">
                 <span class="alert-title">Temperature Out of Safe Range</span>
-                <span class="alert-desc">Urgent action required for Remote Hub A. Detected a breach of the 2-8°C
+                <span class="alert-desc">Urgent action required for Remote Hub A. Detected a breach of the 6-12°C
                     threshold.</span>
             </div>
         </div>
@@ -46,7 +46,8 @@
         </div>
         <nav class="top-nav">
             <a href="index.html" class="nav-link active">Dashboard</a>
-            <a href="graph.html" class="nav-link">Analytics</a>
+            <a href="graph.html" class="nav-link">Live Graph</a>
+            <a href="history.html" class="nav-link">History</a>
             <!-- <a href="#" class="nav-link">Sensors</a> -->
             <!-- <a href="inventory.html" class="nav-link">Inventory</a> -->
             <!-- <a href="#" class="nav-link">Reports</a> -->
@@ -84,10 +85,10 @@
                         <span>Target range settings:</span>
                         <div class="range-inputs" style="display: flex; gap: 0.5rem; align-items: center;">
                             <label style="font-size: 0.8rem; color: #64748B;">Min: <input type="number"
-                                    id="minTempInput" step="0.1" placeholder="Min"
+                                    id="minTempInput" step="0.1" value="6" placeholder="Min"
                                     style="border: 1px solid #CBD5E1; border-radius: 4px; width: 60px; padding: 2px;"></label>
                             <label style="font-size: 0.8rem; color: #64748B;">Max: <input type="number"
-                                    id="maxTempInput" step="0.1" placeholder="Max"
+                                    id="maxTempInput" step="0.1" value="12" placeholder="Max"
                                     style="border: 1px solid #CBD5E1; border-radius: 4px; width: 60px; padding: 2px;"></label>
                         </div>
                     </div>
@@ -97,7 +98,7 @@
                     </div>
                     <div class="range-axis">
                         <span>0°C</span>
-                        <span style="text-align: center;">SAFE ZONE (2-8°C)</span>
+                        <span style="text-align: center;">SAFE ZONE (6-12°C)</span>
                         <span style="text-align: right;">40°C</span>
                     </div>
                 </div>
@@ -217,7 +218,7 @@
 
                     <!-- Threshold Line -->
                     <div class="threshold-line">
-                        <span>THRESHOLD 8°C</span>
+                        <span>THRESHOLD 12°C</span>
                     </div>
                 </div>
                 <div class="chart-labels">

@@ -4,7 +4,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Analytics | Cold Chain Pro</title>
+    <title>History Analysis | Cold Chain Pro</title>
 
     <!-- Fonts: Inter -->
     <link rel="preconnect" href="https://fonts.googleapis.com">
@@ -19,6 +19,9 @@
 
     <link rel="stylesheet" href="css/style.css">
     <link rel="stylesheet" href="css/dashboard.css">
+    <!-- Flatpickr for 24h Time -->
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/flatpickr/dist/flatpickr.min.css">
+    <script src="https://cdn.jsdelivr.net/npm/flatpickr"></script>
 </head>
 
 <body>
@@ -31,8 +34,8 @@
         </div>
         <nav class="top-nav">
             <a href="index.html" class="nav-link">Dashboard</a>
-            <a href="graph.html" class="nav-link active">Live Graph</a>
-            <a href="history.html" class="nav-link">History</a>
+            <a href="graph.html" class="nav-link">Live Graph</a>
+            <a href="history.html" class="nav-link active">History</a>
         </nav>
         <div class="header-controls">
             <button class="icon-btn"><i class="ri-notification-3-line"></i></button>
@@ -43,14 +46,27 @@
     </header>
 
     <main class="dashboard-container">
-        <h1 class="page-title">Live Temperature Analytics</h1>
+        <h1 class="page-title">Historical Data Analysis</h1>
 
         <!-- Graph Section -->
         <div class="card chart-section" style="height: 600px; display: flex; flex-direction: column;">
-            <div class="history-header" style="justify-content: space-between; gap: 1rem;">
-                <h2>Real-time Stream</h2>
+            <div class="history-header" style="flex-wrap: wrap; justify-content: space-between; gap: 1rem;">
+                <h2>Temperature History</h2>
+
+                <div class="controls" style="display: flex; gap: 0.5rem; align-items: center; flex-wrap: wrap;">
+                    <input type="text" id="startTime" class="input-control" placeholder="Start Time"
+                        style="border: 1px solid #CBD5E1; border-radius: 4px; padding: 4px; font-size: 0.85rem;">
+                    <span style="color: #64748B;">to</span>
+                    <input type="text" id="endTime" class="input-control" placeholder="End Time"
+                        style="border: 1px solid #CBD5E1; border-radius: 4px; padding: 4px; font-size: 0.85rem;">
+
+                    <button class="btn-text" id="filterBtn" style="color: var(--col-primary); font-weight: 600;"><i
+                            class="ri-filter-3-line"></i> Filter</button>
+                    <!-- <button class="btn-text" id="resetBtn" style="color: #64748B; display: none;"><i class="ri-refresh-line"></i> Reset / Live</button> -->
+                </div>
+
                 <div style="display: flex; gap: 1rem; align-items: center;">
-                    <span class="badge-normal" id="statusBadge" style="display: none;">NORMAL</span>
+                    <!-- Status Badge less relevant for history, but maybe show range max/min? -->
                 </div>
             </div>
 
@@ -70,7 +86,7 @@
 
     </main>
 
-    <script type="module" src="js/graph-monitor.js"></script>
+    <script type="module" src="js/history-monitor.js"></script>
 </body>
 
 </html>

@@ -1,8 +1,5 @@
-import { app } from '../firebase-config.js';
-import { getDatabase, ref, query, limitToLast, get, onChildAdded } from "https://www.gstatic.com/firebasejs/12.7.0/firebase-database.js";
-
-const db = getDatabase(app);
-const historyRef = ref(db, 'device/history');
+import { db } from '../firebase-config.js';
+import { collection, query, onSnapshot } from "https://www.gstatic.com/firebasejs/12.7.0/firebase-firestore.js";
 
 // Chart Setup
 const ctx = document.getElementById('tempChart').getContext('2d');
@@ -62,17 +59,71 @@ const tempChart = new Chart(ctx, {
 });
 
 const MAX_DATA_POINTS = 50;
-const liveQuery = query(historyRef, limitToLast(MAX_DATA_POINTS));
 
-onChildAdded(liveQuery, (snapshot) => {
-    const record = snapshot.val();
-    addPointToChart(record);
+// Start Live Monitor directly
+const historyCol = collection(db, 'device_history');
+// Querying ALL without index. Note: This downloads all history. 
+// For production with millions of rows, this is bad. 
+// But for this user's request without creating an index, this is the only way to get "Latest 50".
+const liveQuery = query(historyCol);
+
+let isFirstLoad = true;
+
+const TIME_GAP_MS = 30000; // 30 Seconds
+let lastGraphTimestamp = 0;
+
+onSnapshot(liveQuery, (snapshot) => {
+    if (isFirstLoad) {
+        // Client-side Sort
+        let docs = snapshot.docs.map(d => d.data());
+        docs.sort((a, b) => a.timestamp - b.timestamp);
+
+        // Downsample: Take points at least 30s apart
+        let downsampled = [];
+        if (docs.length > 0) {
+            // Always take the very last point first
+            let lastTaken = docs[docs.length - 1];
+            downsampled.push(lastTaken);
+            let lastTakenTime = lastTaken.timestamp;
+
+            // Iterate backwards
+            for (let i = docs.length - 2; i >= 0; i--) {
+                const current = docs[i];
+                if (lastTakenTime - current.timestamp >= TIME_GAP_MS) {
+                    downsampled.unshift(current); // Prepend
+                    lastTakenTime = current.timestamp;
+                }
+                if (downsampled.length >= MAX_DATA_POINTS) break;
+            }
+        }
+
+        downsampled.forEach(record => {
+            addPointToChart(record);
+        });
+
+        if (downsampled.length > 0) {
+            lastGraphTimestamp = downsampled[downsampled.length - 1].timestamp;
+        }
+
+        isFirstLoad = false;
+    } else {
+        snapshot.docChanges().forEach((change) => {
+            if (change.type === "added") {
+                const record = change.doc.data();
+                if (record.timestamp - lastGraphTimestamp >= TIME_GAP_MS) {
+                    addPointToChart(record);
+                    lastGraphTimestamp = record.timestamp;
+                }
+            }
+        });
+    }
+}, (error) => {
+    console.error("Live Graph Error:", error);
 });
 
 function addPointToChart(record) {
     if (!record || record.temperature === undefined) return;
 
-    // Check if timestamp is valid, if not use now or skip
     let timeLabel;
     if (record.timestamp) {
         timeLabel = new Date(record.timestamp).toLocaleTimeString();
@@ -85,6 +136,7 @@ function addPointToChart(record) {
     tempChart.data.labels.push(timeLabel);
     tempChart.data.datasets[0].data.push(temp);
 
+    // Always limit in Live Mode
     if (tempChart.data.labels.length > MAX_DATA_POINTS) {
         tempChart.data.labels.shift();
         tempChart.data.datasets[0].data.shift();
@@ -98,7 +150,7 @@ function updateStatusBadge(temp) {
     const badge = document.getElementById('statusBadge');
     if (!badge) return;
 
-    if (temp > 30 || temp < 15) {
+    if (temp > 12 || temp < 6) {
         badge.textContent = "CRITICAL";
         badge.className = "badge-critical";
         badge.style.display = "inline-block";

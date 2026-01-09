@@ -231,6 +231,7 @@ function updateChart(temp, isCritical) {
         // filter for chart bars to remove oldest
         const bars = Array.from(chart.children).filter(c => c.classList.contains('bar'));
         if (bars.length > 7) {
+            // Placeholder to view file first
             // we remove the first element that is a bar. 
             // Note: chart.children includes the absolute threshold div which we want to keep.
             // Safe way: remove chart.children[0] if it's a bar
@@ -365,10 +366,10 @@ function updateHistoryTable(temp, isCritical) {
 
     lastLogTime = now;
 
-    // PERSISTENCE: Push to Firebase History for Graph
+    // PERSISTENCE: Push to Firestore History for Graph
     try {
-        const historyRef = ref(db, 'device/history');
-        push(historyRef, {
+        const historyCol = collection(db, 'device_history');
+        addDoc(historyCol, {
             temperature: temp,
             timestamp: now,
             status: isCritical ? "CRITICAL" : "NORMAL"

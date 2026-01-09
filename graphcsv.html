@@ -1,0 +1,93 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Upload Data | Cold Chain Pro</title>
+
+    <!-- Fonts: Inter -->
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+
+    <!-- Icons: Remix Icon -->
+    <link href="https://cdn.jsdelivr.net/npm/remixicon@3.5.0/fonts/remixicon.css" rel="stylesheet">
+
+    <link rel="stylesheet" href="css/style.css">
+    <link rel="stylesheet" href="css/dashboard.css">
+</head>
+
+<body>
+
+    <!-- Top Navigation -->
+    <header class="main-header">
+        <div class="brand">
+            <div class="logo-mark"></div>
+            <span>Cold Chain Pro</span>
+        </div>
+        <nav class="top-nav">
+            <a href="index.html" class="nav-link">Dashboard</a>
+            <a href="graph.html" class="nav-link">Live Graph</a>
+            <a href="history.html" class="nav-link">History</a>
+        </nav>
+        <div class="header-controls">
+            <button class="icon-btn"><i class="ri-notification-3-line"></i></button>
+            <button class="icon-btn"><i class="ri-settings-4-line"></i></button>
+            <img src="https://ui-avatars.com/api/?name=User&background=FFE4C4&color=5c4033" alt="Profile"
+                class="user-avatar">
+        </div>
+    </header>
+
+    <main class="dashboard-container">
+        <h1 class="page-title">Upload Historical Data</h1>
+
+        <div class="card" style="max-width: 600px; margin: 0 auto; padding: 2rem;">
+            <div style="text-align: center; margin-bottom: 2rem;">
+                <div
+                    style="background: #F1F5F9; width: 64px; height: 64px; border-radius: 50%; display: flex; align-items: center; justify-content: center; margin: 0 auto 1rem;">
+                    <i class="ri-file-upload-line" style="font-size: 32px; color: var(--col-primary);"></i>
+                </div>
+                <h2>Import CSV Data</h2>
+                <p style="color: #64748B;">Upload a CSV file to add historical temperature records to the system.</p>
+            </div>
+
+            <div
+                style="background: #F8FAFC; border: 1px dashed #CBD5E1; border-radius: 8px; padding: 2rem; text-align: center;">
+                <input type="file" id="csvFileInput" accept=".csv" style="display: none;">
+                <label for="csvFileInput" class="btn-primary" style="cursor: pointer; display: inline-block;">
+                    Select CSV File
+                </label>
+                <div id="fileName" style="margin-top: 1rem; color: #64748B; font-size: 0.9rem;">No file selected</div>
+            </div>
+
+            <div class="format-guide"
+                style="margin-top: 2rem; font-size: 0.9rem; color: #64748B; background: #FFF7ED; padding: 1rem; border-radius: 8px; border-left: 4px solid #F97316;">
+                <strong>Expected Format:</strong><br>
+                <code>Timestamp,Temperature</code><br>
+                Example: <code>2024-01-09 14:30:00, 25.5</code>
+            </div>
+
+            <div style="margin-top: 2rem;">
+                <button id="uploadBtn" class="btn-primary" style="width: 100%;" disabled>
+                    <i class="ri-upload-cloud-2-line"></i> Upload Data
+                </button>
+                <div id="statusMsg" style="margin-top: 1rem; text-align: center; font-weight: 500;"></div>
+            </div>
+        </div>
+
+        <footer class="app-footer">
+            <span>© 2024 Cold Chain Pro. Analytics v1.0</span>
+            <div class="footer-links">
+                <a href="#">System Health</a>
+                <a href="#">Support</a>
+                <a href="#">Privacy</a>
+            </div>
+        </footer>
+
+    </main>
+
+    <script type="module" src="js/csv-uploader.js"></script>
+</body>
+
+</html>

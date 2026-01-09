@@ -138,7 +138,7 @@ async function parseAndUpload(csvText) {
                 parsedRecords.push({
                     timestamp: timestamp,
                     temperature: temp,
-                    status: (temp > 12 || temp < 6) ? "CRITICAL" : "NORMAL"
+                    status: (temp > 16 || temp < 8) ? "CRITICAL" : "NORMAL"
                 });
             }
         }

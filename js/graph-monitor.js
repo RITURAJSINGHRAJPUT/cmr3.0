@@ -150,7 +150,7 @@ function updateStatusBadge(temp) {
     const badge = document.getElementById('statusBadge');
     if (!badge) return;
 
-    if (temp > 12 || temp < 6) {
+    if (temp > 16 || temp < 8) {
         badge.textContent = "CRITICAL";
         badge.className = "badge-critical";
         badge.style.display = "inline-block";

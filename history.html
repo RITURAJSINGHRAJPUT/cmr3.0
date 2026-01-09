@@ -19,6 +19,23 @@
 
     <link rel="stylesheet" href="css/style.css">
     <link rel="stylesheet" href="css/dashboard.css">
+    <style>
+        .btn-time {
+            padding: 2px 8px;
+            font-size: 0.8rem;
+            border: 1px solid #CBD5E1;
+            background: white;
+            border-radius: 4px;
+            cursor: pointer;
+            color: #64748B;
+        }
+
+        .btn-time:hover {
+            background: #F1F5F9;
+            color: var(--col-primary);
+            border-color: var(--col-primary);
+        }
+    </style>
     <!-- Flatpickr for 24h Time -->
     <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/flatpickr/dist/flatpickr.min.css">
     <script src="https://cdn.jsdelivr.net/npm/flatpickr"></script>
@@ -54,6 +71,16 @@
                 <h2>Temperature History</h2>
 
                 <div class="controls" style="display: flex; gap: 0.5rem; align-items: center; flex-wrap: wrap;">
+
+                    <!-- Time Window Filters -->
+                    <div style="display: flex; gap: 4px;">
+                        <button class="btn-time" data-min="10">10m</button>
+                        <button class="btn-time" data-min="60">1h</button>
+                        <button class="btn-time" data-min="720">12h</button>
+                    </div>
+
+                    <div style="width: 1px; height: 20px; background: #E2E8F0; margin: 0 8px;"></div>
+
                     <input type="text" id="startTime" class="input-control" placeholder="Start Time"
                         style="border: 1px solid #CBD5E1; border-radius: 4px; padding: 4px; font-size: 0.85rem;">
                     <span style="color: #64748B;">to</span>
@@ -62,8 +89,17 @@
 
                     <button class="btn-text" id="filterBtn" style="color: var(--col-primary); font-weight: 600;"><i
                             class="ri-filter-3-line"></i> Filter</button>
-                    <!-- <button class="btn-text" id="clearBtn" style="color: #DC2626; font-weight: 600;"><i
-                            class="ri-delete-bin-line"></i> Clear Data</button> -->
+
+                    <!-- Spike Toggle -->
+                    <label
+                        style="display: flex; align-items: center; gap: 4px; font-size: 0.85rem; color: #DC2626; cursor: pointer; margin-left: 8px;">
+                        <input type="checkbox" id="spikeToggle">
+                        <i class="ri-pulse-line"></i> Spikes Only
+                    </label>
+
+                    <!-- <button class="btn-text" id="clearBtn"
+                        style="color: #DC2626; font-weight: 600; margin-left: auto;"><i class="ri-delete-bin-line"></i>
+                        Clear Data</button> -->
                     <!-- <button class="btn-text" id="resetBtn" style="color: #64748B; display: none;"><i class="ri-refresh-line"></i> Reset / Live</button> -->
                 </div>
 

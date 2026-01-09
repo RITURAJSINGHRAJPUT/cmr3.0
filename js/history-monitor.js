@@ -62,6 +62,35 @@ document.getElementById('filterBtn').onclick = applyFilterAction;
 const clearBtn = document.getElementById('clearBtn');
 if (clearBtn) clearBtn.onclick = clearHistoryData;
 
+// Time Buttons Logic
+document.querySelectorAll('.btn-time').forEach(btn => {
+    btn.onclick = () => {
+        const minutes = parseInt(btn.dataset.min);
+        const end = new Date();
+        const start = new Date(end.getTime() - minutes * 60000);
+
+        // Update Flatpickr
+        document.querySelector("#startTime")._flatpickr.setDate(start);
+        document.querySelector("#endTime")._flatpickr.setDate(end);
+
+        // Auto Trigger
+        applyFilterAction();
+    };
+});
+
+// Spike Toggle Logic
+const spikeToggle = document.getElementById('spikeToggle');
+if (spikeToggle) {
+    spikeToggle.onchange = () => {
+        // Re-render chart with current data but filtered
+        if (currentQueryDocs) {
+            renderChart(currentQueryDocs);
+        }
+    };
+}
+
+let currentQueryDocs = []; // Store raw data for toggle
+
 import { deleteDoc, doc } from "https://www.gstatic.com/firebasejs/12.7.0/firebase-firestore.js";
 
 async function clearHistoryData() {
@@ -82,10 +111,8 @@ async function clearHistoryData() {
         await Promise.all(deletePromises);
 
         alert("History Cleared Successfully.");
-        // Clear chart
-        tempChart.data.labels = [];
-        tempChart.data.datasets[0].data = [];
-        tempChart.update();
+        currentQueryDocs = [];
+        renderChart([]);
 
     } catch (e) {
         console.error("Error clearing history:", e);
@@ -101,7 +128,7 @@ flatpickr("#startTime", {
     enableTime: true,
     dateFormat: "Y-m-d H:i",
     time_24hr: true,
-    defaultDate: new Date(Date.now() - 86400000) // 24 hours ago
+    defaultDate: new Date(Date.now() - 3600000) // Default 1 hr
 });
 flatpickr("#endTime", {
     enableTime: true,
@@ -122,12 +149,8 @@ async function applyFilterAction() {
     if (start >= end) { alert("Invalid Range"); return; }
 
     const btn = document.getElementById('filterBtn');
+    const originalText = btn.innerHTML;
     btn.innerHTML = '<i class="ri-loader-4-line ri-spin"></i> Loading...';
-
-    // Clear Chart
-    tempChart.data.labels = [];
-    tempChart.data.datasets[0].data = [];
-    tempChart.update();
 
     // Firestore Query
     const historyCol = collection(db, 'device_history');
@@ -146,35 +169,102 @@ async function applyFilterAction() {
             const docs = querySnapshot.docs.map(doc => doc.data());
             docs.sort((a, b) => a.timestamp - b.timestamp);
 
-            docs.forEach((record) => {
-                addPointToChart(record);
-            });
+            currentQueryDocs = docs; // Save for toggle
+            renderChart(docs);
+
             btn.innerHTML = '<i class="ri-check-line"></i> Loaded';
+            setTimeout(() => btn.innerHTML = originalText, 2000);
         } else {
             alert("No data found in this range.");
-            btn.innerHTML = '<i class="ri-filter-3-line"></i> Filter';
+            btn.innerHTML = originalText;
+            currentQueryDocs = [];
+            renderChart([]);
         }
     } catch (e) {
         console.error("Firestore Error:", e);
         alert("Error fetching data: " + e.message);
-        btn.innerHTML = '<i class="ri-filter-3-line"></i> Filter';
+        btn.innerHTML = originalText;
     }
 }
 
-function addPointToChart(record) {
-    if (!record || record.temperature === undefined) return;
+function renderChart(docs) {
+    if (!tempChart) return;
 
-    let timeLabel;
-    if (record.timestamp) {
-        timeLabel = new Date(record.timestamp).toLocaleString();
-    } else {
-        timeLabel = "Unknown";
+    // Check Spike Toggle
+    const showSpikesOnly = document.getElementById('spikeToggle')?.checked;
+
+    let filtered = docs;
+    if (showSpikesOnly) {
+        // 8 - 16 is Safe. Spike is <8 or >16
+        filtered = docs.filter(r => {
+            const t = Number(r.temperature);
+            return t < 8 || t > 16;
+        });
     }
 
-    const temp = Number(record.temperature);
+    const labels = [];
+    const data = [];
+    const pointColors = [];
+    const pointRadii = [];
 
-    tempChart.data.labels.push(timeLabel);
-    tempChart.data.datasets[0].data.push(temp);
+    filtered.forEach(record => {
+        if (record.temperature === undefined) return;
+
+        const timestamp = record.timestamp ? new Date(record.timestamp).toLocaleString() : "Unknown";
+        const temp = Number(record.temperature);
+
+        labels.push(timestamp);
+        data.push(temp);
+
+        // Visualization: Red for Violation, Green for Safe
+        if (temp < 8 || temp > 16) {
+            pointColors.push('#DC2626'); // Red
+            pointRadii.push(5);
+        } else {
+            pointColors.push('#10B981'); // Green
+            pointRadii.push(3);
+        }
+    });
+
+    tempChart.data.labels = labels;
+    tempChart.data.datasets[0].data = data;
+    tempChart.data.datasets[0].pointBackgroundColor = pointColors;
+    tempChart.data.datasets[0].pointBorderColor = pointColors;
+    tempChart.data.datasets[0].pointRadius = pointRadii;
+
+    // Remove old threshold datasets if any
+    tempChart.data.datasets = [tempChart.data.datasets[0]];
+
+    // Create constant line for 16
+    const lineMax = Array(data.length).fill(16);
+    const lineMin = Array(data.length).fill(8);
+
+    if (data.length > 0) {
+        tempChart.data.datasets.push({
+            label: 'Max (16°C)',
+            data: lineMax,
+            borderColor: '#DC2626',
+            borderWidth: 1,
+            borderDash: [5, 5],
+            pointRadius: 0,
+            fill: false
+        });
+        tempChart.data.datasets.push({
+            label: 'Min (8°C)',
+            data: lineMin,
+            borderColor: '#3B82F6',
+            borderWidth: 1,
+            borderDash: [5, 5],
+            pointRadius: 0,
+            fill: false
+        });
+    }
 
     tempChart.update();
+}
+
+// Remove old addPointToChart as unique rendering is handled by renderChart
+function addPointToChart(record) {
+    // Deprecated for History View mainly, but used by... wait, this file is ONLY history.
+    // So we can replace it safely.
 }

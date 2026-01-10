@@ -89,6 +89,35 @@ if (spikeToggle) {
     };
 }
 
+// Export CSV Logic
+const exportBtn = document.getElementById('exportBtn');
+if (exportBtn) {
+    exportBtn.onclick = () => {
+        if (!currentQueryDocs || currentQueryDocs.length === 0) {
+            alert("No data to export. Please filter data first.");
+            return;
+        }
+
+        // CSV Header
+        let csvContent = "data:text/csv;charset=utf-8,Timestamp,Temperature,Status\n";
+
+        currentQueryDocs.forEach(row => {
+            const time = row.timestamp ? new Date(row.timestamp).toLocaleString() : "Unknown";
+            const temp = row.temperature;
+            const status = row.status || (temp < 8 || temp > 16 ? "CRITICAL" : "NORMAL"); // Logic matches 8-16
+            csvContent += `${time},${temp},${status}\n`;
+        });
+
+        const encodedUri = encodeURI(csvContent);
+        const link = document.createElement("a");
+        link.setAttribute("href", encodedUri);
+        link.setAttribute("download", `temperature_data_${new Date().toISOString().slice(0, 10)}.csv`);
+        document.body.appendChild(link);
+        link.click();
+        document.body.removeChild(link);
+    };
+}
+
 let currentQueryDocs = []; // Store raw data for toggle
 
 import { deleteDoc, doc } from "https://www.gstatic.com/firebasejs/12.7.0/firebase-firestore.js";

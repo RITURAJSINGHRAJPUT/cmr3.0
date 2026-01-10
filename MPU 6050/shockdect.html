@@ -1,0 +1,173 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Shock Monitor | Cold Chain Pro</title>
+
+    <!-- Fonts: Inter -->
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+
+    <!-- Icons: Remix Icon -->
+    <link href="https://cdn.jsdelivr.net/npm/remixicon@3.5.0/fonts/remixicon.css" rel="stylesheet">
+
+    <!-- Chart.js -->
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+
+    <!-- CSS (Relative paths) -->
+    <link rel="stylesheet" href="../css/style.css">
+    <link rel="stylesheet" href="../css/dashboard.css">
+    <style>
+        /* Specific styles for shock detection */
+        .shock-status-card {
+            background: linear-gradient(135deg, #F0FDF4 0%, #DCFCE7 100%);
+            border: 1px solid #10B981;
+            text-align: center;
+        }
+
+        .shock-status-card.critical {
+            background: linear-gradient(135deg, #FEF2F2 0%, #FEE2E2 100%);
+            border: 1px solid #EF4444;
+        }
+
+        .g-val-large {
+            font-size: 5rem;
+            font-weight: 800;
+            line-height: 1;
+            margin: 1rem 0;
+            color: #1E293B;
+        }
+
+        .tilt-indicator {
+            width: 80px;
+            height: 80px;
+            background: #F1F5F9;
+            border: 2px solid #CBD5E1;
+            border-radius: 12px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 2rem;
+            color: #64748B;
+            transition: all 0.3s;
+        }
+
+        .tilt-indicator.tipped {
+            background: #FEE2E2;
+            border-color: #FCA5A5;
+            color: #DC2626;
+            transform: rotate(15deg);
+        }
+
+        .vibration-bar {
+            height: 8px;
+            background: #E2E8F0;
+            border-radius: 4px;
+            overflow: hidden;
+            width: 100%;
+        }
+
+        .vibration-fill {
+            height: 100%;
+            background: #3B82F6;
+            width: 0%;
+            transition: width 0.1s;
+        }
+    </style>
+</head>
+
+<body>
+
+    <!-- Top Navigation -->
+    <header class="main-header">
+        <div class="brand">
+            <div class="logo-mark"></div>
+            <span>Cold Chain Pro</span>
+        </div>
+        <nav class="top-nav">
+            <a href="../index.html" class="nav-link">Dashboard</a>
+            <a href="../graph.html" class="nav-link">Live Graph</a>
+            <a href="../history.html" class="nav-link">History</a>
+            <a href="#" class="nav-link active">Shock Monitor</a>
+        </nav>
+        <div class="header-controls">
+            <button class="icon-btn"><i class="ri-notification-3-line"></i></button>
+            <div style="text-align: right;">
+                <div style="font-size: 0.8rem; font-weight: 700; color: #1E293B;">Connected</div>
+                <div style="font-size: 0.7rem; color: #10B981;">MPU-6050 Active</div>
+            </div>
+            <img src="https://ui-avatars.com/api/?name=User&background=FFE4C4&color=5c4033" alt="Profile"
+                class="user-avatar">
+        </div>
+    </header>
+
+    <main class="dashboard-container">
+        <h1 class="page-title">Shock & Handling Monitor</h1>
+
+        <div class="monitor-grid">
+            <!-- Main G-Force Card -->
+            <div class="card shock-status-card" id="mainStatusCard">
+                <div class="card-header" style="justify-content: center; margin-bottom: 1rem;">
+                    <span class="card-label" id="statusText" style="color: #15803D;">HANDLING NORMAL</span>
+                </div>
+
+                <div class="g-val-large" id="gForceVal">0.1G</div>
+
+                <div style="font-size: 0.9rem; color: #64748B; font-weight: 500;">
+                    Peak Shock Level
+                </div>
+
+                <button class="btn-alert-outline" id="resetShockBtn"
+                    style="margin-top: 2rem; border-color: #94A3B8; color: #64748B;">Reset Status</button>
+            </div>
+
+            <!-- Indicators -->
+            <div class="side-cards">
+                <!-- Tilt -->
+                <div class="card info-card">
+                    <div class="tilt-indicator" id="tiltIcon">
+                        <i class="ri-box-3-line"></i>
+                    </div>
+                    <div class="info-content">
+                        <span class="label">ORIENTATION</span>
+                        <span class="value" id="tiltText">Upright</span>
+                    </div>
+                </div>
+
+                <!-- Vibration -->
+                <div class="card info-card" style="display: block;">
+                    <div style="display: flex; justify-content: space-between; margin-bottom: 8px;">
+                        <span class="label">VIBRATION LEVEL</span>
+                        <span class="value" style="font-size: 0.9rem;" id="vibVal">0.02 RMS</span>
+                    </div>
+                    <div class="vibration-bar">
+                        <div class="vibration-fill" id="vibBar"></div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Live Acceleration Graph -->
+        <div class="card chart-section">
+            <div class="history-header">
+                <h2>Accelerometer Stream (X, Y, Z)</h2>
+                <div style="display: flex; gap: 10px;">
+                    <span class="badge" style="background: #e0f2fe; color: #0284c7;">X-Axis</span>
+                    <span class="badge" style="background: #dcfce7; color: #16a34a;">Y-Axis</span>
+                    <span class="badge" style="background: #fee2e2; color: #dc2626;">Z-Axis</span>
+                </div>
+            </div>
+            <div class="chart-container" style="height: 300px;">
+                <canvas id="accelChart"></canvas>
+            </div>
+        </div>
+
+    </main>
+
+    <script type="module" src="../js/shock-monitor.js"></script>
+</body>
+
+</html>

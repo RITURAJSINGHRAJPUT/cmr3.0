@@ -1,6 +1,8 @@
 import { rtdb } from '../firebase-config.js';
 import { ref, onValue } from "https://www.gstatic.com/firebasejs/12.7.0/firebase-database.js";
 
+console.log("Shock Monitor Script Loaded");
+
 // DOM Elements
 const gForceDisplay = document.getElementById('gForceVal');
 const statusCard = document.getElementById('mainStatusCard');
@@ -48,6 +50,7 @@ const deviceRef = ref(rtdb, 'device');
 
 onValue(deviceRef, (snapshot) => {
     const data = snapshot.val();
+    console.log("Firebase Data:", data);
     if (data) {
         const mpu = data.mpu || {};
 
@@ -64,7 +67,9 @@ onValue(deviceRef, (snapshot) => {
 
         if (deviceShockFlag || alertType === "SHOCK") {
             const magnitude = Math.sqrt(latestX * latestX + latestY * latestY + latestZ * latestZ);
-            triggerShock(magnitude > 1 ? magnitude : 3.0);
+            const force = magnitude > 1 ? magnitude : 3.0;
+            updateChart(latestX, latestY, latestZ); // Instant update on shock
+            triggerShock(force);
         }
     }
 });
@@ -101,10 +106,18 @@ function analyzeMotion(x, y, z) {
         if (gForceDisplay) gForceDisplay.innerText = magnitude.toFixed(1) + 'G';
     }
 
-    // Tilt Detection
-    const isTipped = Math.abs(z) < 0.5 || Math.abs(x) > 0.8 || Math.abs(y) > 0.8;
-    if (isTipped) {
-        triggerTilt();
+    // 4. Tilt Detection
+    // Logic: Only check for tilt if the device is relatively STABLE
+    // Relaxed window: 0.5G to 2.0G (Handles poor calibration or minor movement)
+    if (magnitude < 2.0 && magnitude > 0.5) {
+        if (z < 0.4) {
+            triggerTilt();
+        } else {
+            // Optional: Log why not tipped? 
+            // console.log("Upright: Z is " + z);
+        }
+    } else {
+        console.log("Tilt Check Skipped: Unstable Magnitude " + magnitude.toFixed(2));
     }
 }
 
@@ -139,6 +152,26 @@ function triggerShock(force) {
         resetBtn.style.color = "#EF4444";
         resetBtn.innerText = "Acknowledge Alert";
     }
+
+    logShockEvent(force);
+}
+
+function logShockEvent(force) {
+    const tbody = document.getElementById('shockBody');
+    if (!tbody) return;
+
+    const row = document.createElement('tr');
+    const time = new Date().toLocaleTimeString();
+
+    row.innerHTML = `
+        <td style="color: #1E293B; font-weight: 500;">${time}</td>
+        <td style="color: #DC2626; font-weight: 600;">IMPACT DETECTED</td>
+        <td style="font-weight: 700;">${force.toFixed(2)}G</td>
+        <td><span class="badge" style="background: #FEF2F2; color: #DC2626;">CRITICAL</span></td>
+    `;
+
+    // Add to top
+    tbody.prepend(row);
 }
 
 let tiltTimeout;
